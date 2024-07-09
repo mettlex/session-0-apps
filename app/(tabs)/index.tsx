@@ -1,49 +1,61 @@
-import { useState } from "react";
-import { Button, Image, StyleSheet } from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { Alert, Button, TextInput, useColorScheme, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const [count, setCount] = useState(0);
+  const [text, setText] = useState("");
+
+  const colorScheme = useColorScheme();
+
+  let textColor = "text-black";
+
+  if (colorScheme === "dark") textColor = "text-slate-50";
+
+  let boderColor = "border-black";
+
+  if (colorScheme === "dark") boderColor = "border-white";
+
+  useEffect(() => {
+    async function load() {
+      const savedText = await AsyncStorage.getItem("note");
+
+      if (savedText) {
+        setText(savedText);
+      }
+    }
+
+    load();
+  }, []);
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hi Dad!</ThemedText>
-        <HelloWave />
+    <View>
+      <SafeAreaView>
+        <View className="dark:bg-blue-300"></View>
 
-        <Button title={`Count: ${count}`} onPress={() => setCount(count + 1)} />
-      </ThemedView>
-    </ParallaxScrollView>
+        <TextInput
+          className={`border-2 border-black p-2 px-4 mx-2 text-2xl rounded-full ${textColor} ${boderColor}`}
+          value={text}
+          onChangeText={(value) => {
+            setText(value);
+          }}
+        />
+
+        <Button
+          title="Save"
+          onPress={async () => {
+            try {
+              await AsyncStorage.setItem("note", text.toUpperCase());
+
+              Alert.alert("Saved!");
+
+              setText("");
+            } catch (error) {
+              Alert.alert(error as string);
+            }
+          }}
+        />
+      </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});

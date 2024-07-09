@@ -1,3 +1,4 @@
+import { Octicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 
@@ -20,15 +21,13 @@ export default function TabLayout() {
         options={{
           title: "My App",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
+            <TabBarIcon name={focused ? "home" : "home-outline"} color={color} />
           ),
         }}
       />
+
       <Tabs.Screen
-        name="explore"
+        name="about"
         options={{
           title: "About",
           tabBarIcon: ({ color, focused }) => (
@@ -36,6 +35,16 @@ export default function TabLayout() {
               name={focused ? "code-slash" : "code-slash-outline"}
               color={color}
             />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, focused }) => (
+            <Octicons name="gear" size={24} color={color} />
           ),
         }}
       />
